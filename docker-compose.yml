@@ -1,0 +1,27 @@
+# Postgres 16 for the LumenTale wiki.
+#
+#   docker compose up -d
+#   docker compose down        # keeps volume
+#   docker compose down -v     # wipes data
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: lumentale-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: anidex4
+      POSTGRES_USER: anidex4
+      POSTGRES_PASSWORD: anidex4
+    ports:
+      - "5433:5432"
+    volumes:
+      - lumentale_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anidex4 -d anidex4"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  lumentale_pgdata:

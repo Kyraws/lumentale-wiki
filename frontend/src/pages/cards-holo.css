@@ -1,0 +1,280 @@
+/*
+ * cards-holo.css — in-game holographic / foil card effect, recreated in CSS.
+ *
+ * SOURCE (decompiled): phase4-complete/native/decompiled_full/GameCardImage.c
+ *   - The game builds a per-card runtime UnityEngine.Material and drives a "_Holo"
+ *     float (GameCardImage$$set_Holo, 0/1) plus a "_HoloMask" texture and a
+ *     "_HoloMaskST" tiling/offset Vector4 (GameCardImage.<SetHoloMaskInfo>d__31).
+ *     A second "_PowerHoloMask" layer is set for "Power"-flagged cards
+ *     (GameCardImage.<SetPowerHoloMaskInfo>d__34). So the real effect is a
+ *     *mask-driven iridescent sheen* overlaid on the card art, intensity gated by
+ *     card tier — exactly what we reproduce below: a pointer/tilt-tracked rainbow
+ *     gradient + a moving specular glare, clipped to the card and modulated per
+ *     rarity. Exact shader RGB ramp / curve constants live in the compiled shader
+ *     (not in the il2cpp dump), so the gradient stops here are an authored,
+ *     rarity-tiered approximation, not lifted numerically.
+ *
+ * Driven by custom properties set from useHolo.ts:
+ *   --mx,--my   : pointer position over the card, 0..100 (%)
+ *   --rx,--ry   : tilt rotation in deg
+ *   --holo      : 0..1 master intensity (rarity tier), also gates whether the
+ *                 effect renders at all (see [data-holo-on]).
+ *   --pointer    : 0..1 — 1 while pointer/focus is active (sheen ramps in).
+ */
+
+.holo-card {
+  --mx: 50;
+  --my: 50;
+  --rx: 0deg;
+  --ry: 0deg;
+  --holo: 0;
+  --pointer: 0;
+  position: relative;
+  display: block;
+  aspect-ratio: 1450 / 2048; /* native card art ratio (~5:7) */
+  border: 3px solid var(--color-ink);
+  border-radius: 3px;
+  background-color: var(--color-cream-2);
+  overflow: hidden;
+  isolation: isolate;
+  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 220ms ease;
+  will-change: transform;
+}
+
+.holo-card img.holo-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: auto; /* card art is hi-res illustration, not pixel sprite */
+  display: block;
+  z-index: 0;
+}
+
+/* The iridescent rainbow film. Pointer-tracked hue sweep clipped to the card. */
+.holo-card .holo-foil {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: calc(var(--holo) * (0.18 + 0.55 * var(--pointer)));
+  mix-blend-mode: color-dodge;
+  background-image:
+    repeating-linear-gradient(
+      115deg,
+      hsl(0 100% 60%) 0%,
+      hsl(45 100% 60%) 8%,
+      hsl(120 100% 55%) 16%,
+      hsl(190 100% 60%) 24%,
+      hsl(260 100% 65%) 32%,
+      hsl(320 100% 62%) 40%,
+      hsl(0 100% 60%) 48%
+    );
+  background-size: 280% 280%;
+  background-position: calc(var(--mx) * 1%) calc(var(--my) * 1%);
+  filter: saturate(1.4) contrast(1.05);
+  transition: opacity 220ms ease;
+}
+
+/* Sparkle / glitter speckle layer — sits above the foil, masked to the brights. */
+.holo-card .holo-sparkle {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: calc(var(--holo) * 0.5 * var(--pointer));
+  mix-blend-mode: color-dodge;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.9) 0.5px, transparent 1.4px),
+    radial-gradient(circle at 70% 65%, rgba(255, 255, 255, 0.8) 0.5px, transparent 1.4px),
+    radial-gradient(circle at 45% 85%, rgba(255, 255, 255, 0.85) 0.5px, transparent 1.4px),
+    radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.8) 0.5px, transparent 1.4px),
+    radial-gradient(circle at 15% 75%, rgba(255, 255, 255, 0.75) 0.5px, transparent 1.4px);
+  background-size: 90px 90px, 70px 70px, 110px 110px, 60px 60px, 100px 100px;
+  background-position:
+    calc(var(--mx) * -0.6%) calc(var(--my) * -0.6%),
+    calc(var(--mx) * 0.5%) calc(var(--my) * -0.4%),
+    calc(var(--mx) * -0.3%) calc(var(--my) * 0.5%),
+    calc(var(--mx) * 0.4%) calc(var(--my) * 0.6%),
+    calc(var(--mx) * -0.5%) calc(var(--my) * -0.3%);
+  transition: opacity 220ms ease;
+}
+
+/* Specular glare — a soft moving highlight that follows the pointer. */
+.holo-card .holo-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: calc(0.35 + 0.45 * var(--pointer));
+  mix-blend-mode: soft-light;
+  background: radial-gradient(
+    farthest-corner circle at calc(var(--mx) * 1%) calc(var(--my) * 1%),
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.25) 18%,
+    rgba(120, 120, 160, 0.05) 45%,
+    rgba(20, 20, 40, 0.2) 100%
+  );
+  transition: opacity 220ms ease;
+}
+
+/* Only render the foil/sparkle when this card is flagged holo (rarity tier). */
+.holo-card:not([data-holo-on='1']) .holo-foil,
+.holo-card:not([data-holo-on='1']) .holo-sparkle {
+  display: none;
+}
+
+/* Non-holo cards still get a subtle glare so the screen feels glassy. */
+.holo-card:not([data-holo-on='1']) .holo-glare {
+  opacity: calc(0.2 + 0.2 * var(--pointer));
+}
+
+/* Hero (detail) variant — bigger glare, richer film, no aspect override here so
+ * the page can size it. */
+.holo-card.holo-hero {
+  border-width: 4px;
+  box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 0.35);
+}
+.holo-card.holo-hero[data-holo-on='1'] {
+  box-shadow:
+    6px 6px 0 0 rgba(0, 0, 0, 0.35),
+    0 0 26px -6px var(--holo-glow, rgba(255, 203, 61, 0.5));
+}
+
+/* Grid cell wrapper so the card fills the rectangle with no wasted padding. */
+.holo-cell {
+  display: block;
+  width: 100%;
+}
+.holo-cell .holo-card {
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 180ms ease;
+}
+.holo-cell:hover .holo-card,
+.holo-cell:focus-visible .holo-card {
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Rarity glow accent ring color, mirrored from the rarity ladder. */
+.holo-card[data-rarity='Common'] { --holo-glow: rgba(180, 188, 210, 0.45); }
+.holo-card[data-rarity='Uncommon'] { --holo-glow: rgba(120, 220, 160, 0.5); }
+.holo-card[data-rarity='Rare'] { --holo-glow: rgba(90, 180, 255, 0.55); }
+.holo-card[data-rarity='Power'] { --holo-glow: rgba(255, 120, 90, 0.6); }
+.holo-card[data-rarity='Event'] { --holo-glow: rgba(200, 120, 255, 0.6); }
+.holo-card[data-rarity='Kickstarter'] { --holo-glow: rgba(255, 203, 61, 0.65); }
+
+@media (prefers-reduced-motion: reduce) {
+  .holo-card {
+    transition: none;
+    transform: none !important;
+  }
+  .holo-card .holo-foil,
+  .holo-card .holo-sparkle,
+  .holo-card .holo-glare {
+    transition: none;
+  }
+}
+
+/* Time-driven holo animation — decompiled CardShader semantics:
+   HoloType1 = directional RAINBOW BANDS (hue ramp along _HoloType1_Direction,
+   width from _Density, phase from _Offset + time*_Speed) whose direction
+   ROTATES at _HoloType1_RotationScrollSpeed (10°/s → 36s/turn), MODULATED by
+   the per-card foil pattern (holo.png) and clipped to the artwork (mask.png).
+   _BorderGlitterSpeed drives the border sheen. */
+@property --holo-rot {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --holo-phase {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: false;
+}
+@property --border-drift {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: false;
+}
+@keyframes holo-rainbow-anim {
+  to { --holo-rot: 360deg; --holo-phase: 100; }
+}
+@keyframes holo-border-anim {
+  50% { --border-drift: 100; }
+  100% { --border-drift: 0; }
+}
+
+/* ===== Game-faithful holo (decompiled CardShader layering) =====
+   Rainbow band field (rotating direction + scrolling phase + pointer shift)
+   × per-card foil pattern, color-dodged onto the art inside the mask.      */
+.holo-foil-game {
+  position: absolute;
+  inset: 0;
+  background-image:
+    var(--holo-url),
+    repeating-linear-gradient(
+      calc(var(--holo-rot) + 25deg + (var(--mx, 50) - 50) * 0.5deg),
+      hsl(0 100% 65%) 0%,
+      hsl(60 100% 65%) 23%,
+      hsl(120 100% 65%) 46%,
+      hsl(190 100% 65%) 69%,
+      hsl(265 100% 65%) 92%,
+      hsl(360 100% 65%) 115%);
+  background-size:
+    calc(100% / var(--holo-tx, 3)) calc(100% / var(--holo-ty, 3)),
+    230% 230%;
+  background-position:
+    calc((var(--mx, 50) - 50) * -0.45%) calc((var(--my, 50) - 50) * -0.45%),
+    calc(var(--holo-phase) * 1% + (var(--mx, 50) - 50) * 1.4%)
+    calc(var(--holo-phase) * 0.6% + (var(--my, 50) - 50) * 1.4%);
+  background-blend-mode: multiply;
+  -webkit-mask-image: var(--mask-url);
+  mask-image: var(--mask-url);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  mask-mode: luminance;
+  mix-blend-mode: color-dodge;
+  /* idle shimmer floor (the in-game card animates without input), boosted on hover */
+  opacity: calc((0.35 + var(--pointer, 0) * 0.5) * var(--holo, 0));
+  filter: saturate(1.35) brightness(1.05);
+  /* one direction rotation per 36s (_HoloType1_RotationScrollSpeed 10°/s) */
+  animation: holo-rainbow-anim 36s linear infinite;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+/* Border holo: the material's two extracted colors (_BorderHoloColorA/B)
+   sweeping with the view angle, clipped by the game's generic border mask. */
+.holo-border-game {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    calc(115deg + (var(--mx, 50) - 50) * 1.6deg + (var(--my, 50) - 50) * 0.8deg),
+    rgba(215, 109, 255, 0.95) 8%,
+    rgba(155, 255, 124, 0.95) 50%,
+    rgba(215, 109, 255, 0.95) 92%);
+  background-size: 240% 240%;
+  background-position: calc(var(--border-drift) * 1%) calc(var(--border-drift) * 1%);
+  -webkit-mask-image: url('/data/cards/_shader/border_mask.png');
+  mask-image: url('/data/cards/_shader/border_mask.png');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  mask-mode: luminance;
+  mix-blend-mode: screen;
+  opacity: calc((0.25 + var(--pointer, 0) * 0.45) * var(--holo, 0));
+  /* border glitter sweep (_BorderGlitterSpeed 0.4 → ~15s there-and-back) */
+  animation: holo-border-anim 15s ease-in-out infinite;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .holo-foil-game,
+  .holo-border-game {
+    animation: none;
+    opacity: calc(var(--holo, 0) * 0.2);
+  }
+}

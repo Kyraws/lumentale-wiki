@@ -1,0 +1,322 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   LumenDex design system — "2.5D handheld" game UI
+   Cream pixel panels on a deep-indigo bezel, chunky borders,
+   hard (blur-less) drop shadows, retro display font.
+   ============================================================ */
+
+@theme {
+  /* Surfaces */
+  --color-night: #14152b; /* app bezel / deepest bg */
+  --color-night-2: #1d1f3d; /* raised dark surface */
+  --color-dusk: #2b2d52; /* dark panel / dialog box */
+  --color-cream: #ece3c8; /* primary light panel */
+  --color-cream-2: #ddd3b3; /* sunken cream */
+  --color-parch: #f5eedb; /* brightest paper */
+
+  /* Ink (text on cream) */
+  --color-ink: #232548;
+  --color-ink-soft: #4a4d7a;
+  --color-ink-mute: #7b7ea8;
+
+  /* Brand */
+  --color-lumen: #25c2a0; /* primary — "lumen" teal glow */
+  --color-lumen-deep: #149f82;
+  --color-gold: #ffcb3d; /* accent */
+  --color-gold-deep: #e0a423;
+  --color-berry: #e2533f; /* danger / lost */
+  --color-sky: #4aa3e8;
+
+  /* Element type colors (13) */
+  --color-el-fire: #f0803c;
+  --color-el-water: #4aa3e8;
+  --color-el-grass: #57bd5a;
+  --color-el-electric: #f2c63d;
+  --color-el-ice: #74cfe0;
+  --color-el-geo: #b58a4e;
+  --color-el-aura: #c77dd6;
+  --color-el-chakra: #f08fb0;
+  --color-el-virus: #8a5cc0;
+  --color-el-data: #2fc3b4;
+  --color-el-demon: #a23148;
+  --color-el-ancient: #c9a14a;
+  --color-el-anomalous: #6f7398;
+
+  /* Emotion type colors (5) */
+  --color-emo-felicis: #f4b528; /* joy   */
+  --color-emo-furor: #e2533f; /* anger */
+  --color-emo-mestus: #5b86c4; /* sorrow */
+  --color-emo-sereum: #57b894; /* calm  */
+  --color-emo-horrens: #9a5ba6; /* dread */
+
+  /* Fonts */
+  --font-display: 'Press Start 2P', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+  --font-pixel: 'VT323', 'Nunito', monospace;
+
+  /* Radii — kept tiny; the look is hard-edged */
+  --radius-pix: 2px;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--color-night);
+    /* Subtle dotted "overworld" texture on the bezel */
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px
+    );
+    background-size: 14px 14px;
+    color: var(--color-cream);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Crisp pixel sprites everywhere */
+  img.sprite,
+  .sprite img {
+    image-rendering: pixelated;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.5;
+  }
+
+  /* Keyboard accessibility: always-visible focus ring */
+  :focus-visible {
+    outline: 3px solid var(--color-lumen);
+    outline-offset: 2px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@layer components {
+  /* --- Pixel panel: the cream card with a chunky double border --- */
+  .pixel-panel {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-pix);
+    box-shadow:
+      inset 0 0 0 2px var(--color-parch),
+      4px 4px 0 0 rgba(20, 21, 43, 0.55);
+  }
+
+  /* --- Dialog box: dark navy framed panel (nav, headers, hero) --- */
+  .dialog-box {
+    background-color: var(--color-dusk);
+    color: var(--color-cream);
+    border: 3px solid #0c0d1d;
+    border-radius: var(--radius-pix);
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.14),
+      4px 4px 0 0 rgba(0, 0, 0, 0.45);
+  }
+
+  /* --- Chunky button: tactile press, no layout shift --- */
+  .pixel-btn {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    min-height: 44px;
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-pix);
+    box-shadow: 3px 3px 0 0 rgba(20, 21, 43, 0.55);
+    cursor: pointer;
+    transition:
+      transform 120ms ease-out,
+      box-shadow 120ms ease-out,
+      background-color 120ms ease-out;
+    user-select: none;
+  }
+  .pixel-btn:hover {
+    background-color: var(--color-parch);
+  }
+  .pixel-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 rgba(20, 21, 43, 0.55);
+  }
+  .pixel-btn--primary {
+    background-color: var(--color-lumen);
+    color: #08231d;
+  }
+  .pixel-btn--primary:hover {
+    background-color: #31d6b2;
+  }
+
+  /* --- Type / emotion chip --- */
+  .type-chip {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-pix);
+    border: 2px solid rgba(0, 0, 0, 0.55);
+    color: #fff;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  /* Inset "screen" — the recessed cream window used for sprites/maps */
+  .pixel-screen {
+    background-color: var(--color-cream-2);
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-pix);
+    box-shadow: inset 3px 3px 0 0 rgba(20, 21, 43, 0.22);
+  }
+
+  /* Stat meter track + fill (segmented, pixel feel) */
+  .stat-track {
+    background-color: rgba(35, 37, 72, 0.18);
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-pix);
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  /* Display heading helper with hard shadow */
+  .text-pixel-shadow {
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
+  }
+
+  /* Bobbing overworld sprite */
+  .anim-bob {
+    animation: bob 1.6s steps(2, end) infinite;
+  }
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  /* Soft float for hero art */
+  .anim-float {
+    animation: float 3.2s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Entrance for grids / lists */
+  .anim-pop {
+    animation: pop 220ms ease-out both;
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Deep-link landing flash — a gold outline + glow pulse that pops a card
+     when navigated to via #anchor (e.g. /quirks#Anode). */
+  .flash-target {
+    outline: 4px solid transparent;
+    outline-offset: 3px;
+    animation: target-flash 0.85s ease-out 2;
+  }
+  @keyframes target-flash {
+    0% {
+      outline-color: transparent;
+      box-shadow: 0 0 0 0 rgba(245, 200, 121, 0);
+      transform: scale(1);
+    }
+    25% {
+      outline-color: var(--color-gold);
+      box-shadow: 0 0 26px 4px rgba(245, 200, 121, 0.7);
+      transform: scale(1.025);
+    }
+    100% {
+      outline-color: transparent;
+      box-shadow: 0 0 0 0 rgba(245, 200, 121, 0);
+      transform: scale(1);
+    }
+  }
+
+  .anim-shimmer {
+    background: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0.04) 30%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.04) 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  .scanlines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(0, 0, 0, 0.05) 3px
+    );
+  }
+}
+
+/* Respect reduced-motion (a11y) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Tidy scrollbars on dark bezel */
+* {
+  scrollbar-color: var(--color-dusk) transparent;
+}

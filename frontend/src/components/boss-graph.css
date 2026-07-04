@@ -1,0 +1,226 @@
+/* Boss battle-graph reader — pixel/2.5D idiom, tokens from index.css.
+   Scoped under .bgraph so it can never leak into shared styles. */
+
+.bgraph .bgraph-h {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--color-ink);
+  margin-bottom: 0.15rem;
+}
+.bgraph .bgraph-sub {
+  font-size: 0.72rem;
+  color: var(--color-ink-mute);
+  line-height: 1.3;
+}
+
+/* ---- strong-skill chips ---- */
+.bgraph .bgraph-strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 2px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  background: color-mix(in srgb, var(--color-gold) 14%, var(--color-parch));
+  color: var(--color-ink);
+  border-radius: 2px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+.bgraph .bgraph-strong:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--color-gold) 24%, var(--color-parch));
+}
+.bgraph .bgraph-strong-target {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-ink-mute);
+}
+
+/* ---- rule cards ---- */
+.bgraph .bgraph-rule {
+  position: relative;
+  border: 3px solid var(--color-ink);
+  background: var(--color-cream);
+  border-radius: 3px;
+  padding: 0.7rem 0.8rem 0.8rem;
+  box-shadow: inset 0 0 0 2px var(--color-parch);
+}
+.bgraph .bgraph-rule-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+.bgraph .bgraph-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 2px;
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  line-height: 1;
+}
+.bgraph .bgraph-when {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  color: var(--color-lumen-deep);
+}
+.bgraph .bgraph-trigger {
+  font-weight: 800;
+  color: var(--color-ink);
+  font-size: 0.95rem;
+}
+
+.bgraph .bgraph-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+}
+.bgraph .bgraph-row + .bgraph-row {
+  border-top: 1px dashed color-mix(in srgb, var(--color-ink) 20%, transparent);
+}
+.bgraph .bgraph-tag {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 2px;
+  color: var(--color-cream);
+  min-width: 2.3rem;
+  text-align: center;
+}
+.bgraph .bgraph-tag-if {
+  background: var(--color-gold-deep);
+}
+.bgraph .bgraph-tag-do {
+  background: var(--color-lumen-deep);
+}
+
+.bgraph .bgraph-cond {
+  display: inline-flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--color-gold) 18%, var(--color-parch));
+  border: 2px solid color-mix(in srgb, var(--color-gold-deep) 45%, transparent);
+  color: var(--color-ink);
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: 2px;
+  padding: 0.2rem 0.45rem;
+}
+
+/* ---- effects ---- */
+.bgraph .bgraph-effect {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  background: var(--color-parch);
+  border: 2px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+  border-left: 4px solid var(--color-ink-mute);
+  border-radius: 2px;
+  padding: 0.35rem 0.5rem;
+}
+.bgraph .bgraph-eff-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+.bgraph .bgraph-eff-detail {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-ink-mute);
+}
+.bgraph .bgraph-effect-strong {
+  border-left-color: var(--color-gold-deep);
+  background: color-mix(in srgb, var(--color-gold) 12%, var(--color-parch));
+}
+.bgraph .bgraph-eff-changePhase {
+  border-left-color: var(--color-berry);
+  background: color-mix(in srgb, var(--color-berry) 12%, var(--color-parch));
+}
+.bgraph .bgraph-eff-defeatSwitch,
+.bgraph .bgraph-eff-endBattle {
+  border-left-color: var(--color-berry);
+}
+.bgraph .bgraph-eff-rotation {
+  border-left-color: var(--color-lumen-deep);
+}
+
+/* skill chips inside a rotation */
+.bgraph .bgraph-rot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--color-cream-2);
+  border: 2px solid color-mix(in srgb, var(--color-ink) 20%, transparent);
+  border-radius: 2px;
+  padding: 0.12rem 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--color-ink);
+  transition: background 0.1s ease;
+}
+.bgraph a.bgraph-rot:hover {
+  background: color-mix(in srgb, var(--color-lumen) 24%, var(--color-cream-2));
+}
+.bgraph .bgraph-rot-unknown {
+  color: var(--color-ink-mute);
+  font-style: italic;
+}
+.bgraph .bgraph-arrow {
+  color: var(--color-ink-mute);
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+/* ---- legend ---- */
+.bgraph .bgraph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  background: var(--color-cream-2);
+  border: 2px dashed color-mix(in srgb, var(--color-ink) 25%, transparent);
+  border-radius: 3px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-ink-soft);
+}
+.bgraph .bgraph-legend-title {
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  color: var(--color-ink);
+}
+.bgraph .bgraph-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.bgraph .bgraph-legend-swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
+}
+.bgraph .bgraph-leg-when {
+  background: var(--color-lumen-deep);
+}
+.bgraph .bgraph-leg-if {
+  background: var(--color-gold-deep);
+}
+.bgraph .bgraph-leg-do {
+  background: var(--color-lumen);
+}
+.bgraph .bgraph-leg-strong {
+  background: var(--color-gold);
+}
+.bgraph .bgraph-leg-phase {
+  background: var(--color-berry);
+}

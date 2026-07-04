@@ -1,0 +1,6 @@
+# keep the build context lean (assets in data/ are intentionally included)
+**/node_modules/
+**/dist/
+**/build/
+**/.gradle/
+*.md

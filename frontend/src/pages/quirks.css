@@ -1,0 +1,15 @@
+/* Quirks page — owner icon rail. Scoped here so the shared Sprite/index.css
+   stay untouched. The list layout (a row of menu-sprite tiles per quirk) gives
+   the animon icons room to breathe vs the old text chips. */
+
+.quirk-owner.is-hidden .sprite {
+  /* Hidden-slot quirks read as muted so they're visually distinct from the
+     normal/visible bearers (matches the old dimmed text chip intent). */
+  opacity: 0.5;
+  filter: grayscale(0.35);
+}
+
+.quirk-owner.is-hidden:hover .sprite {
+  opacity: 0.85;
+  filter: none;
+}

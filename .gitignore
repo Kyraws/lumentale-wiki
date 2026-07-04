@@ -1,0 +1,19 @@
+# build output
+**/node_modules/
+**/dist/
+**/build/
+**/.gradle/
+*.tsbuildinfo
+
+# game-derived data is not part of this repo (see README — Data)
+data/
+
+# local tooling
+**/chrome-linux64/
+**/screenshots/
+*.log
+.env
+.idea/
+.vscode/
+.DS_Store
+*Zone.Identifier

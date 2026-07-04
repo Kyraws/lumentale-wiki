@@ -1,0 +1,95 @@
+/* Camps & Squadrons page styling — 2.5D handheld idiom.
+   Owned by the camps-squadrons slice; imported only from its four pages. */
+
+/* Effect-class accent tints for camps. */
+.camp-accent {
+  --camp-tint: var(--color-ink-soft, #6b5a48);
+}
+.camp-accent[data-effect='ExpBoostCampEffect']      { --camp-tint: #4f9d69; }
+.camp-accent[data-effect='MoneyBoostCampEffect']     { --camp-tint: #c79a2e; }
+.camp-accent[data-effect='DamageBoostCampEffect']    { --camp-tint: #c2502f; }
+.camp-accent[data-effect='DropBoostCampEffect']      { --camp-tint: #3f8fb0; }
+.camp-accent[data-effect='CatchrateBoostCampEffect'] { --camp-tint: #8a5cc7; }
+.camp-accent[data-effect='LostCampEffect']           { --camp-tint: #6b6f8c; }
+
+/* The little effect badge on a camp card. */
+.camp-effect-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 2px solid color-mix(in srgb, var(--camp-tint) 70%, #000 10%);
+  background: color-mix(in srgb, var(--camp-tint) 18%, transparent);
+  color: color-mix(in srgb, var(--camp-tint) 55%, #1c130a);
+  border-radius: 2px;
+  padding: 0.15rem 0.45rem;
+  font-weight: 800;
+  font-size: 0.7rem;
+  line-height: 1.1;
+}
+
+/* Region pill. */
+.region-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.region-pill[data-region='North']  { background: #2b4b6b22; color: #2f5d86; border: 2px solid #2f5d8655; }
+.region-pill[data-region='South']  { background: #6b3b2b22; color: #8a4a2f; border: 2px solid #8a4a2f55; }
+.region-pill[data-region='Center'] { background: #6b5a2b22; color: #8a6a2f; border: 2px solid #8a6a2f55; }
+.region-pill[data-region='Talea']  { background: #4b4b4b22; color: #5a5a5a; border: 2px solid #5a5a5a55; }
+
+/* A big readout stat block (lumen / duration / influence). */
+.camp-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  border: 3px solid var(--color-ink, #1c130a);
+  border-radius: 2px;
+  background: var(--color-parch, #efe2c4);
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+}
+.camp-stat .v {
+  font-family: var(--font-pixel);
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--color-ink, #1c130a);
+}
+.camp-stat .k {
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-mute, #8a7a64);
+}
+
+/* Roster member chips, with a muted variant for anonymous fighters. */
+.member-chip { transition: background 120ms, transform 120ms; }
+.member-chip:hover { transform: translateY(-1px); }
+.member-chip[data-anon='true'] { opacity: 0.82; }
+
+/* Rank-group heading rule. */
+.roster-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-mute, #8a7a64);
+}
+.roster-rule::after {
+  content: '';
+  flex: 1;
+  height: 0;
+  border-top: 2px dashed color-mix(in srgb, var(--color-ink, #1c130a) 25%, transparent);
+}

@@ -1,0 +1,47 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.4'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.lumentale'
+version = '0.4.0-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// Pure JDBC — read-mostly wiki API. No JPA: the schema is hand-authored DDL
+	// (wiki-db/migrations) and the long-tail columns are jsonb, which map far more
+	// cleanly with RowMappers + ::jsonb casts than with entity mapping.
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	// v3 OWNS the schema + seed (v2 connected to an externally-seeded DB). Flyway
+	// applies the wiki-db/ migrations; the Seeder backfills from data/seed/*.json.
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	runtimeOnly    'org.postgresql:postgresql'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// JVM CWD = repo root so /data assets (data/assets/...), the seed dir
+// (data/seed/...) and the Flyway migration dir (wiki-db/migrations) all resolve
+// relative to the repo root, matching the other backends.
+bootRun {
+	workingDir = file('..')
+}

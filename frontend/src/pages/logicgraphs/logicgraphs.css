@@ -1,0 +1,48 @@
+/* Logic Graphs page — local styles (owned by LogicGraphs.tsx).
+   Kept here per the "create your own <domain>.css" rule; does not touch
+   shared index.css. */
+
+/* Behaviour-tree role chips. */
+.lg-role {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.lg-role--start { background-color: var(--color-ink-mute); }
+.lg-role--flow { background-color: var(--color-sky); }
+.lg-role--check { background-color: var(--color-gold-deep); }
+.lg-role--action { background-color: var(--color-lumen-deep); }
+
+/* Indented tree connector rail. */
+.lg-tree-row {
+  position: relative;
+  padding-left: 0.5rem;
+}
+.lg-tree-rail {
+  border-left: 3px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+
+/* Track bucket bars (timeline). */
+.lg-bucket-bar {
+  height: 8px;
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  overflow: hidden;
+}
+.lg-bucket-fill {
+  height: 100%;
+}
+
+/* Intro card accent. */
+.lg-intro {
+  border-left-width: 6px;
+  border-left-style: solid;
+}
+.lg-intro--trees { border-left-color: var(--color-lumen); }
+.lg-intro--timelines { border-left-color: var(--color-sky); }
+.lg-intro--minigames { border-left-color: var(--color-gold); }

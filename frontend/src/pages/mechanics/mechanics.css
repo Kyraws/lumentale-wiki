@@ -1,0 +1,147 @@
+/* Mechanics page styling — owned by the Mechanics redesign.
+ * Goal: keep the 2.5D handheld idiom (pixel panels, ink-on-cream) but make
+ * everything LEGIBLE — real reading font sizes, generous spacing, and styled
+ * math expressions instead of cramped raw monospace. */
+
+/* ---- formula expression pretty-printer ---- */
+.mx-fx {
+  font-family: var(--font-pixel);
+  font-size: 1.35rem; /* VT323 is small at 1em; bump it up for readability */
+  line-height: 1.7;
+  color: var(--color-ink);
+  background-color: var(--color-cream-2);
+  border: 3px solid var(--color-ink);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 2px var(--color-parch);
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+}
+.mx-fx-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 0.15rem;
+  padding: 0.1rem 0;
+  white-space: pre-wrap;
+}
+.mx-fx-line + .mx-fx-line {
+  border-top: 2px dashed color-mix(in srgb, var(--color-ink) 18%, transparent);
+  margin-top: 0.35rem;
+  padding-top: 0.45rem;
+}
+.mx-fx-lhs {
+  font-weight: 700;
+  color: var(--color-lumen-deep);
+}
+.mx-fx-eq {
+  color: var(--color-ink-mute);
+  margin: 0 0.45rem;
+}
+.mx-fx-var {
+  color: var(--color-ink);
+  font-style: italic;
+}
+.mx-fx-num {
+  color: var(--color-emo-furor);
+  font-variant-numeric: tabular-nums;
+}
+.mx-fx-op {
+  color: var(--color-ink-mute);
+  margin: 0 0.28rem;
+}
+.mx-fx-kw {
+  color: var(--color-emo-mestus);
+  font-weight: 700;
+}
+.mx-fx-paren {
+  color: var(--color-ink-soft);
+}
+.mx-fx-txt {
+  color: var(--color-ink-soft);
+}
+
+/* ---- generic readable copy on this page ---- */
+.mx-prose {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+}
+.mx-prose strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+/* ---- constant chip used inline ---- */
+.mx-const {
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  color: var(--color-emo-furor);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- XP curve chart ---- */
+.mx-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.mx-chart-frame {
+  position: relative;
+  padding: 0.5rem;
+}
+.mx-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mx-chart-grid {
+  stroke: color-mix(in srgb, var(--color-ink) 14%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+}
+.mx-chart-axisline {
+  stroke: var(--color-ink);
+  stroke-width: 2.5;
+}
+.mx-chart-axis {
+  fill: var(--color-ink-mute);
+  font-family: var(--font-pixel);
+  font-size: 16px;
+}
+.mx-chart-line {
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mx-chart-ylabel {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.7rem;
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  color: var(--color-ink-mute);
+}
+.mx-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+.mx-chart-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.mx-chart-swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 1px;
+  flex: none;
+}
+.mx-chart-note {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-ink-mute);
+}
