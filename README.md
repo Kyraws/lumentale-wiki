@@ -2,10 +2,13 @@
 
 A fan-made wiki web app for **LumenTale: Memories of Trey** — creatures, moves, items, cards, bosses, quests, an interactive world map, and a full story browser.
 
-> **Fan project.** Not affiliated with or endorsed by the developers of LumenTale.
-> All game content, names, and artwork belong to their respective owners.
-> This repository ships the **application only — no game data is included**
-> (see [Data](#data--none-included-by-design)). The code is MIT-licensed.
+> **Personal fan project.** This is a hobby project built by one person in their
+> free time — it is **not** affiliated with, endorsed by, or connected to the
+> developers or publishers of LumenTale in any way, and it is strictly
+> non-commercial. All game content, names, and artwork belong to their
+> respective owners. This repository ships the **application only — no game
+> data is included** (see [Data](#data--none-included-by-design)). The code is
+> MIT-licensed.
 
 ## Features
 
