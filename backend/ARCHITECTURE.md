@@ -1,5 +1,7 @@
 # LumenTale Wiki — backend-v3 architecture & design
 
+> Historical design notes: version names, counts, setup details and reported results below may predate the current checkout. See the [current engineering source tour](../docs/ENGINEERING.md) and root README for current setup and verification limits.
+
 backend-v3 is a from-scratch rebuild of the wiki API on the **redesigned
 `wiki-db` schema** (81 tables, 13 modules, `uuid` PKs, hybrid jsonb graphs,
 two-hop asset resolution, 8-language localization). The **vision is unchanged**

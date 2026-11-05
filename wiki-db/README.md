@@ -1,5 +1,7 @@
 # wiki-db — LumenTale Wiki database redesign
 
+> Historical design notes: version names, counts, setup details and reported results below may predate the current checkout. See the [current engineering source tour](../docs/ENGINEERING.md) and root README for current setup and verification limits.
+
 From-scratch Postgres schema that absorbs the full `phase4-complete` extract and
 connects every game entity. Deliverable = **design doc + DDL + ER map** (no
 seeding/running).
