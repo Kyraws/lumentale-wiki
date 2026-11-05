@@ -1,5 +1,7 @@
 # LumenTale Wiki — Database Redesign
 
+> Historical design notes: version names, counts, setup details and reported results below may predate the current checkout. See the [current engineering source tour](../docs/ENGINEERING.md) and root README for current setup and verification limits.
+
 A **from-scratch** Postgres schema for the *LumenTale: Memories of Trey* wiki,
 rebuilt to absorb the full `phase4-complete` extract. It supersedes the old
 `anidex2` schema (`lumentale-wiki/backend/.../db/migration/V1–V9`) and is

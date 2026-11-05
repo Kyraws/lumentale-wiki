@@ -1,89 +1,117 @@
 # LumenTale Wiki
 
-A fan-made wiki web app for **LumenTale: Memories of Trey** — creatures, moves, items, cards, bosses, quests, an interactive world map, and a full story browser.
+A full-stack fan wiki for **LumenTale: Memories of Trey**, connecting creatures, moves, quests, story scenes and world-map locations in a searchable web interface. Built with **Java 17 / Spring Boot, React / TypeScript and PostgreSQL**.
 
-> **Personal fan project.** This is a hobby project built by one person in their
-> free time — it is **not** affiliated with, endorsed by, or connected to the
-> developers or publishers of LumenTale in any way, and it is strictly
-> non-commercial. All game content, names, and artwork belong to their
-> respective owners. This repository ships the **application only — no game
-> data is included** (see [Data](#data--none-included-by-design)). The code is
-> MIT-licensed.
+> **Personal, non-commercial fan project**, unaffiliated with the game's developers or publishers. All game content, names and artwork belong to their respective owners. This repository distributes the **application code only**, under the [MIT license](LICENSE). Game-derived data and artwork are not included or licensed by this repository.
 
-## Features
+## What the app supports
 
-- **Dex** — every creature variant-keyed (no collapsed regional forms), with base stats and letter grades, two-axis type matchups, learnsets (level-up vs tutor), evolution chains, and spawn locations with level ranges
-- **World map** — 300 navigable maps with pins for exits, item pickups, wild spawns, shops, and trainer/boss battles; engine-true pin projection reverse-engineered from the game's own map code
-- **Story browser** — all 1,200+ story scenes as readable dialogue flows, organized into the North/South playthrough spine with a path toggle
-- **Moves, items, crafting, cards** (with the game-faithful holo card effect), furniture, trainers, bosses, camps, squadrons, achievements, tutorials, quests (state-machine viewer), and game mechanics (formulas, type effectiveness)
-- **8-language localization** with English defaults
+- Creature variants with stats, elemental/emotion matchups, learnsets, evolution chains and spawn locations.
+- Navigable world maps with linked exits, pickups, spawns and encounters; marker placement uses map coordinates and optional per-tile calibration.
+- Story dialogue and quest-flow browsing, boss battle graphs, and links between related entities.
+- Moves, items, crafting, cards, furniture, trainers, camps, squadrons, achievements, tutorials and mechanics pages.
+- Localization lookup with English defaults, supplied by a separately staged dataset.
 
-## Stack
+These capabilities depend on compatible game data. The default configuration disables seeding and is intended for schema-only startup; a fresh clone does not provide a populated wiki or game artwork. No screenshot set or hosted demo is included here.
 
-- **Backend** — Spring Boot 3.5 / Java 17, plain JDBC, Flyway migrations (`wiki-db/`, 81 tables), idempotent seeders
-- **Frontend** — React 19, Vite, TypeScript, Tailwind 4, react-router 7 — a "2.5D handheld" pixel-art UI
-- **Database** — PostgreSQL 16
+## Engineering overview
 
-## Layout
-
-```
-├── backend/          Spring Boot API (:8084) + seeders
-├── frontend/         React SPA (:5177 dev, proxies /api + /data to :8084)
-├── wiki-db/          Postgres schema — Flyway migrations + design docs
-├── tools/            data-curation scripts
-├── build.sh          build frontend dist + backend jar
-└── run.sh            build if needed, then run jar + SPA preview
+```mermaid
+flowchart LR
+    Extract["Separately supplied extract"] --> Curate["Python name/localization curation"]
+    Extract --> Seed["Opt-in Java seeders"]
+    Curate --> Seed
+    Seed --> DB["PostgreSQL: relations + JSONB graphs"]
+    DDL["Flyway migrations"] --> DB
+    DB --> API["Spring Boot / JDBC API"]
+    API --> UI["React / TypeScript pages"]
+    Assets["Separately supplied assets"] --> API
 ```
 
-## Run it
+- **Data modeling:** UUID-keyed entities and foreign keys represent relationships; whole story/battle graphs use JSONB documents with relational rollups for cross-links. See the [migrations](wiki-db/migrations).
+- **Backend:** domain packages separate controllers, services and JDBC repositories. Seeders import staged JSON; shared helpers resolve localization, references and asset URLs.
+- **Frontend:** typed React pages combine API data with map overlays, dialogue readers and graph views. Shared components handle loading, errors, empty states and missing images.
+- **Data tooling:** Python resolves localized names and cross-references. Map calibration fits marker placement to existing tile images. The raw extractor and GPU map renderer are outside this checkout.
+- **Performance choices:** startup indexes, HTTP/asset caching, JSON compression, frontend response caching and in-flight request reuse suit a read-mostly dataset. These are implementation choices, not benchmark results.
+
+See the [engineering source tour](docs/ENGINEERING.md) for code links, tradeoffs, test scope and a reusable project summary.
+
+## Run locally
+
+Prerequisites: Java 17, Docker Compose for PostgreSQL 16, and Node.js 20.19+ in the 20.x line or 22.12+ (the locked Vite requirement). The examples use Bash, with each terminal starting at the repository root.
 
 ```bash
-# 1. database
-docker compose up -d          # Postgres 16 on :5433, db/user/pass = anidex4
+# Terminal 1: database (local development credentials only)
+docker compose up -d
 
-# 2. backend — CWD must be the repo root (it resolves data/ and wiki-db/ relative to it)
-cd backend && ./gradlew bootRun      # :8084 — Flyway migrates, seeders fill empty tables
+# Terminal 2: API on http://localhost:8084
+cd backend
+./gradlew bootRun
 
-# 3. frontend
-cd frontend && npm install && npm run dev    # :5177
+# Terminal 3: UI on http://localhost:5177
+cd frontend
+npm ci
+npm run dev
 ```
 
-Or `./run.sh` to build and run the production jar + SPA preview in one go.
+On Windows, use `gradlew.bat bootRun` in the backend terminal. Gradle sets the JVM working directory to the repository root so migrations and data paths resolve correctly. The Vite development server proxies `/api` and `/data` to the backend. The Compose database is `anidex4` on port `5433` with matching local-only username/password.
 
-Quick check: `GET http://localhost:8084/` lists the endpoints, `GET /api/meta` shows entity counts.
+With the API running, inspect `http://localhost:8084/` for its endpoint index and `/api/meta` for entity counts. Setup commands are matched to source configuration; runtime success was not reproduced during this documentation review.
 
-## Data — none included (by design)
+## Data: separately supplied, never redistributed here
 
-**This repository contains no game-derived data** — no extracted stats, text, or artwork. Out of respect for the game creators' IP, the dataset is not distributed until/unless they give their blessing. What you get here is the complete application: schema (81 tables), API, seeders, and UI.
+The dataset is withheld out of respect for the game creators' IP. Owning the game does not grant permission through this repository to redistribute extracts or imagery. Only use data and assets you are authorized to obtain and use.
 
-A fresh clone boots **schema-only**: Flyway creates all tables, seeding is off by default (`lumentale.seed.on-empty=false`), and every page renders with empty states.
+A compatible local dataset follows this layout:
 
-If you own the game and produce your own extract, stage it and turn seeding on:
-
-```
+```text
 data/
-├── seed/         extraction JSON (forms.json, moves.json, items.json, …, loc/)
-├── curated/      generated by tools/build_curated_data.py from data/seed
-└── assets/       optional art export (forms/<guid>/menu.png, maps/<guid>/tile.png, …)
+  seed/       extraction JSON and loc/ localization files
+  curated/    output from tools/build_curated_data.py
+  assets/     optional exported images, e.g. maps/<guid>/tile.png
 ```
+
+With compatible inputs staged, `python3 tools/build_curated_data.py` generates curated names and cross-references. Enable importing empty tables explicitly:
 
 ```bash
-LUMENTALE_SEED_ON_EMPTY=true ./run.sh    # seeders backfill empty tables, then serve
+# From backend/, with the database running
+LUMENTALE_SEED_ON_EMPTY=true ./gradlew bootRun
 ```
 
-## Deploy
+Optional mechanics, logic-graph and manifest inputs use `LUMENTALE_PHASE4_DIR` (default `phase4-complete` relative to the repository root). Missing sources limit the corresponding features. These tools consume pre-existing extracts; the repository does not provide a raw game-extraction or map-rendering pipeline. See [configuration](backend/src/main/resources/application.properties).
 
-`Dockerfile` builds a single image: SPA embedded in the jar, migrations baked in, no data.
+## Build and verification
+
+```bash
+# Run from repository root in Bash
+(cd backend && ./gradlew test)
+(cd frontend && npm ci && npm run build)
+```
+
+The backend contains unit tests for graph assembly, quest flow, type calculations and other domain logic. These do not establish that a full dataset imports or that every page works. No fresh test pass or rendering-speed measurement is claimed by this README.
+
+`./build.sh` builds the frontend and backend jar; its default backend path skips tests. `./run.sh` builds missing artifacts and starts the API plus Vite preview on port 4173; start PostgreSQL separately. Run Gradle tests explicitly as above.
+
+## Container packaging
+
+The [Dockerfile](Dockerfile) builds the SPA into the Spring Boot jar and includes the migrations, without game data. Configure an external database for the container:
 
 ```bash
 docker build -t lumentale-wiki .
-docker run -p 8080:8080 \
+docker run --rm -p 8080:8080 \
   -e SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:<port>/<db> \
-  -e SPRING_DATASOURCE_USERNAME=... -e SPRING_DATASOURCE_PASSWORD=... \
-  -v /path/to/data:/app/data -e LUMENTALE_SEED_ON_EMPTY=true \  # only if you have a dataset
+  -e SPRING_DATASOURCE_USERNAME=<user> \
+  -e SPRING_DATASOURCE_PASSWORD=<password> \
   lumentale-wiki
 ```
 
-## License
+Use a database hostname reachable from the container. To supply authorized local data, add `-v /absolute/path/to/data:/app/data:ro` and `-e LUMENTALE_SEED_ON_EMPTY=true`; configure and mount optional phase-four inputs separately if needed. This describes the packaging in source, not a verified deployment.
 
-Code: [MIT](LICENSE). Game-derived data and any game imagery remain the property of the game's creators.
+## Documentation
+
+- [Engineering source tour and project summary](docs/ENGINEERING.md)
+- [Backend setup and tests](backend/README.md)
+- [Frontend setup and structure](frontend/README.md)
+- [Historical backend design](backend/ARCHITECTURE.md) and [database design](wiki-db/00-OVERVIEW.md)
+
+Historical notes retain earlier version names, counts and validation reports; use current configuration and migrations for setup and scope.
